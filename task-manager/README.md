@@ -21,6 +21,8 @@ bun install
 ```
 
 ## Development Server
+Start internal server
+cd task-manager-server node server.js
 
 Start the development server on `http://localhost:3000`:
 
