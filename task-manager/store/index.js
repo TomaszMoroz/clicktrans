@@ -6,52 +6,52 @@ const store = createStore({
     tasks: [],
   },
   mutations: {
+    SET_TASKS(state, tasks) {
+      state.tasks = tasks;
+    },
     ADD_TASK(state, task) {
       state.tasks.push(task);
     },
     EDIT_TASK(state, updatedTask) {
-      const index = state.tasks.findIndex(t => t.id === updatedTask.id);
+      const index = state.tasks.findIndex(task => task.id === updatedTask.id);
       if (index !== -1) {
         state.tasks.splice(index, 1, updatedTask);
       }
     },
-    DELETE_TASK(state, id) {
-      state.tasks = state.tasks.filter(task => task.id !== id);
-    },
-    SET_TASKS(state, tasks) {
-      state.tasks = tasks;
+    DELETE_TASK(state, taskId) {
+      state.tasks = state.tasks.filter(task => task.id !== taskId);
     },
   },
   actions: {
     async fetchTasks({ commit }) {
-      // API call to fetch tasks
-      const response = await axios.get('/api/tasks');
-      commit('SET_TASKS', response.data);
+      try {
+        const response = await axios.get('http://localhost:3001/api/tasks');
+        commit('SET_TASKS', response.data);
+      } catch (error) {
+        console.error('Error fetching tasks:', error);
+      }
     },
-    addTask({ commit }, task) {
-      // Mock or API call to add a task
-      commit('ADD_TASK', task);
+    async saveTasks({ state }) {
+      try {
+        await axios.post('http://localhost:3001/api/tasks', state.tasks);
+      } catch (error) {
+        console.error('Error saving tasks:', error);
+      }
     },
-    editTask({ commit }, updatedTask) {
-      // Mock or API call to edit a task
+    async deleteTask({ commit }, taskId) {
+      commit('DELETE_TASK', taskId);
+      await this.dispatch('saveTasks'); // Save the updated tasks after deletion
+    },
+    async editTask({ commit }, updatedTask) {
       commit('EDIT_TASK', updatedTask);
-    },
-    deleteTask({ commit }, id) {
-      // Mock or API call to delete a task
-      commit('DELETE_TASK', id);
-    },
+      await this.dispatch('saveTasks'); // Save the updated tasks after editing
+    }
   },
   getters: {
-    filterTasksByStatus: (state) => (status) => {
-      return state.tasks.filter(task => task.status === status);
+    allTasks(state) {
+      return state.tasks;
     },
-    filterTasksByPriority: (state) => (priority) => {
-      return state.tasks.filter(task => task.priority === priority);
-    },
-    sortedTasksByCreation: (state) => {
-      return [...state.tasks].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-    },
-  }
+  },
 });
 
 export default store;
