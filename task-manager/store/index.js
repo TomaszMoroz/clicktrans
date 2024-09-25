@@ -38,6 +38,10 @@ const store = createStore({
         console.error('Error saving tasks:', error);
       }
     },
+    async addTask({ commit }, newTask) {
+      commit('ADD_TASK', newTask)
+      await this.dispatch('saveTasks')
+    },
     async deleteTask({ commit }, taskId) {
       commit('DELETE_TASK', taskId);
       await this.dispatch('saveTasks'); // Save the updated tasks after deletion
