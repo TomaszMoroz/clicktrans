@@ -34,10 +34,10 @@ const task = ref({
   status: 'to do',    // Default value
 });
 
-const addTask = () => {
-  // Here we commit the ADD_TASK mutation instead of dispatching an action
-  store.commit('ADD_TASK', { ...task.value, id: Date.now() });
-  
+const addTask = async () => {
+  try {
+    store.dispatch('addTask', { ...task.value, id: Date.now() })
+  } catch(err) { console.error(err) }
   // Reset the form fields after adding the task
   task.value = { title: '', description: '', priority: 'medium', status: 'to do' };
 };
@@ -52,20 +52,20 @@ form {
 input,
 textarea,
 select {
-  width: 100%; /* Make inputs full width */
+  width: 100%;
   padding: 10px;
   margin: 10px 0;
   border: 1px solid #ccc;
   border-radius: 4px;
-  box-sizing: border-box; /* Ensures padding and border are included in width */
+  box-sizing: border-box;
 }
 
 textarea {
-  height: 100px; /* Set a height for the textarea */
+  height: 100px;
 }
 
 .button-group {
   display: flex;
-  gap: 10px; /* Add space between buttons */
+  gap: 10px;
 }
 </style>
