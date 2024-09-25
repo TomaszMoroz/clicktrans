@@ -1,7 +1,7 @@
 <template>
   <div class="task-list">
-    <h2>Task List</h2>
-        <div class="filter-sort">
+    <h2>Task List {{ isLoading ? `${onFetchning}` : `${onFetchingDone}` }}</h2>
+    <div class="filter-sort">
       <select v-model="selectedStatus" @change="updateFilter">
         <option value="">All Status</option>
         <option value="to do">To Do</option>
@@ -50,6 +50,9 @@ import EditTaskDialog from './dialogs/EditTaskDialog.vue';
 
 const store = useStore();
 
+const isLoading = ref(true)
+const onFetchingDone = ref('')
+const onFetchning = ref(' fetchning data...')
 const selectedStatus = ref('');
 const selectedPriority = ref('');
 const sortBy = ref('date');
@@ -75,7 +78,9 @@ const tasks = computed(() => {
 });
 
 const deleteTask = (id) => {
-  store.dispatch('deleteTask', id);
+  try {
+    store.dispatch('deleteTask', id);
+  } catch(err) { console.error(err) }
 };
 
 const openEditDialog = (task) => {
@@ -88,19 +93,19 @@ const closeEditDialog = () => {
   selectedTask.value = null;
 };
 
-const updateFilter = () => {
-  store.commit('SET_FILTER', {
-    status: selectedStatus.value,
-    priority: selectedPriority.value,
-  });
-};
-
-const updateSort = () => {
-  store.commit('SET_SORT_BY', sortBy.value);
-};
-
 onMounted(async () => {
-  await store.dispatch('fetchTasks')
+  try {
+    isLoading.value = true
+    await store.dispatch('fetchTasks')
+  } catch(err) {
+    console.error(err)
+    onFetchingDone.value = ' fetchning data error'
+  } finally {
+    setTimeout(() => {
+      isLoading.value = false
+      onFetchingDone.value = ''
+    }, 1500);
+  }
 })
 </script>
 
@@ -113,6 +118,6 @@ onMounted(async () => {
 
 .button-group {
   display: flex;
-  gap: 10px; /* Add space between buttons */
+  gap: 10px;
 }
 </style>
