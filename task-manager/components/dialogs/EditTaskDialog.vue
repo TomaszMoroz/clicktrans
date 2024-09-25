@@ -1,6 +1,5 @@
 <template>
   <div class="dialog" v-if="isVisible">
-    <div class="dialog-overlay" @click="close"></div>
     <div class="dialog-content">
       <h2>Edit Task</h2>
       <form @submit.prevent="handleEdit">
@@ -46,22 +45,22 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['close', 'update']);
-
 const store = useStore();
-const editedTask = ref({ ...props.task });
 
-watch(() => props.task, (newTask) => {
-  editedTask.value = { ...newTask };
-});
+const editedTask = ref({ ...props.task });
 
 const handleEdit = () => {
   store.dispatch('editTask', editedTask.value);
-  emit('close');
+  close();
 };
 
 const close = () => {
   emit('close');
 };
+
+watch(() => props.task, (newTask) => {
+  editedTask.value = { ...newTask };
+});
 </script>
 
 <style scoped>
@@ -77,50 +76,41 @@ const close = () => {
   z-index: 1000;
 }
 
-.dialog-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-}
-
 .dialog-content {
   background-color: white;
-  padding: 20px; /* Padding for spacing */
+  padding: 20px;
   border-radius: 8px;
   z-index: 1001;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-  max-width: 400px; /* Maximum width for the dialog */
-  width: 100%; /* Full width relative to dialog */
-  box-sizing: border-box; /* Include padding in width calculation */
+  max-width: 400px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 form {
   display: flex;
-  flex-direction: column; /* Stack form elements */
-  width: 90%; /* Use full width of dialog */
+  flex-direction: column;
+  width: 90%;
   margin: auto
 }
 
 input,
 textarea,
 select {
-  width: 100%; /* Full width for inputs */
+  width: 100%;
   padding: 10px;
-  margin: 10px 0; /* Space between inputs */
+  margin: 10px 0;
   border: 1px solid #ccc;
   border-radius: 4px;
-  box-sizing: border-box; /* Include padding in width */
+  box-sizing: border-box;
 }
 
 textarea {
-  height: 100px; /* Set a height for the textarea */
+  height: 100px;
 }
 
 .button-group {
   display: flex;
-  gap: 10px; /* Space between buttons */
+  gap: 10px;
 }
 </style>
